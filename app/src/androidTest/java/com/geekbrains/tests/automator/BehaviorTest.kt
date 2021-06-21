@@ -15,6 +15,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 import com.geekbrains.tests.R
+import com.geekbrains.tests.SharedDate
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -82,7 +83,7 @@ class BehaviorTest {
             )
         //Убеждаемся, что сервер вернул корректный результат. Обратите внимание, что количество
         //результатов может варьироваться во времени, потому что количество репозиториев постоянно меняется.
-        Assert.assertEquals(changedText.text.toString(), "Number of results: 674")
+        Assert.assertEquals(changedText.text.toString(), "Number of results: ${SharedDate.COUNT}")
     }
 
     @Test
@@ -179,7 +180,7 @@ class BehaviorTest {
         //Чтобы проверить отображение определенного количества репозиториев,
         //вам в одном и том же методе нужно отправить запрос на сервер и открыть DetailsScreen.
         Log.d("!!!", textDetail.text)
-        Assert.assertEquals(textDetail.text, "Number of results: 674")
+        Assert.assertEquals(textDetail.text, "Number of results: ${SharedDate.COUNT}")
     }
 
     companion object {
