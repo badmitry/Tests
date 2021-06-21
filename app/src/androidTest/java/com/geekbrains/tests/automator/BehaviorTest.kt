@@ -2,6 +2,7 @@ package com.geekbrains.tests.automator
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
@@ -67,8 +68,10 @@ class BehaviorTest {
         //Устанавливаем значение
         editText.text = "UiAutomator"
         //Отправляем запрос через Espresso
-        Espresso.onView(ViewMatchers.withId(R.id.searchEditText))
-            .perform(ViewActions.pressImeActionButton())
+//        Espresso.onView(ViewMatchers.withId(R.id.searchEditText))
+//            .perform(ViewActions.pressImeActionButton())
+        uiDevice.findObject(By.desc("Search")).click()
+
 
         //Ожидаем конкретного события: появления текстового поля totalCountTextView.
         //Это будет означать, что сервер вернул ответ с какими-то данными, то есть запрос отработал.
@@ -79,7 +82,31 @@ class BehaviorTest {
             )
         //Убеждаемся, что сервер вернул корректный результат. Обратите внимание, что количество
         //результатов может варьироваться во времени, потому что количество репозиториев постоянно меняется.
-        Assert.assertEquals(changedText.text.toString(), "Number of results: 668")
+        Assert.assertEquals(changedText.text.toString(), "Number of results: 674")
+    }
+
+    @Test
+    fun test_SearchIsNegative() {
+        //Через uiDevice находим editText
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+        //Устанавливаем значение
+        editText.text = "UiAutomator"
+        //Отправляем запрос через Espresso
+//        Espresso.onView(ViewMatchers.withId(R.id.searchEditText))
+//            .perform(ViewActions.pressImeActionButton())
+        uiDevice.findObject(By.desc("Search")).click()
+
+
+        //Ожидаем конкретного события: появления текстового поля totalCountTextView.
+        //Это будет означать, что сервер вернул ответ с какими-то данными, то есть запрос отработал.
+        val changedText =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            )
+        //Убеждаемся, что сервер вернул корректный результат. Обратите внимание, что количество
+        //результатов может варьироваться во времени, потому что количество репозиториев постоянно меняется.
+        Assert.assertNotEquals(changedText.text.toString(), "Number of results: 600")
     }
 
     //Убеждаемся, что DetailsScreen открывается
@@ -108,6 +135,51 @@ class BehaviorTest {
         //Чтобы проверить отображение определенного количества репозиториев,
         //вам в одном и том же методе нужно отправить запрос на сервер и открыть DetailsScreen.
         Assert.assertEquals(changedText.text, "Number of results: 0")
+    }
+
+    @Test
+    fun test_CountOnDetailsScreen() {
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+        //Устанавливаем значение
+        editText.text = "UiAutomator"
+        //Отправляем запрос через Espresso
+//        Espresso.onView(ViewMatchers.withId(R.id.searchEditText))
+//            .perform(ViewActions.pressImeActionButton())
+        uiDevice.findObject(By.desc("Search")).click()
+
+
+        //Ожидаем конкретного события: появления текстового поля totalCountTextView.
+        //Это будет означать, что сервер вернул ответ с какими-то данными, то есть запрос отработал.
+        val changedText =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            )
+
+        //Находим кнопку
+        val toDetails: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "toDetailsActivityButton"
+            )
+        )
+        //Кликаем по ней
+        toDetails.click()
+
+        //Ожидаем конкретного события: появления текстового поля totalCountTextView.
+        //Это будет означать, что DetailsScreen открылся и это поле видно на экране.
+        val textDetail =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountDetailTextView")),
+                TIMEOUT
+            )
+        //Убеждаемся, что поле видно и содержит предполагаемый текст.
+        //Обратите внимание, что текст должен быть "Number of results: 0",
+        //так как мы кликаем по кнопке не отправляя никаких поисковых запросов.
+        //Чтобы проверить отображение определенного количества репозиториев,
+        //вам в одном и том же методе нужно отправить запрос на сервер и открыть DetailsScreen.
+        Log.d("!!!", textDetail.text)
+        Assert.assertEquals(textDetail.text, "Number of results: 674")
     }
 
     companion object {
